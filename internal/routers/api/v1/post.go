@@ -33,14 +33,28 @@ func GetPosts(c *gin.Context) {
 
 func GetPost(c *gin.Context) {
 	var (
-		appG    = app.Gin{C: c}
-		orderId = appG.C.Param("orderId")
+		appG   = app.Gin{C: c}
+		postId = appG.C.Param("postId")
 	)
 
-	order, err := services.GetPost(orderId)
+	order, err := services.GetPost(postId)
 	if err != nil {
 		appG.C.JSON(http.StatusInternalServerError, err)
 		return
 	}
 	appG.C.JSON(http.StatusOK, order)
+}
+
+func ArchivePost(c *gin.Context) {
+	var (
+		appG   = app.Gin{C: c}
+		postId = appG.C.Param("postId")
+	)
+
+	post, err := services.ArchivePost(postId)
+	if err != nil {
+		appG.C.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	appG.C.JSON(http.StatusOK, post)
 }

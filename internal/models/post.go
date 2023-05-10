@@ -5,10 +5,14 @@ import (
 )
 
 type Post struct {
-	PostId int `gorm:"primary_key" json:"post_id"`
+	PostId      int    `gorm:"primary_key" json:"post_id"`
+	Status      string `json:"status"` // ["To Do", "In Profress", "Done"]
+	Description string `json:"description"`
+	// CreateUser
 
-	CreatedAt int `json:"created_at"`
-	UpdatedAt int `json:"updated_at"`
+	CreatedAt int  `json:"created_at"`
+	UpdatedAt int  `json:"updated_at"`
+	IsArchive bool `json:"is_archive"`
 }
 
 type QueryPost struct {
@@ -29,6 +33,7 @@ func FindPosts(query QueryPost) (*[]Post, error) {
 		Offset(offset).
 		Limit(limit).
 		// Preload("Comments").
+		// Preload("Comments.User").
 		// Preload("CreateUser").
 		Error
 
@@ -55,4 +60,28 @@ func FindPost(postId string) (*Post, error) {
 	}
 
 	return &post, nil
+}
+
+func InsertOrder(post Post) (*Post, error) {
+	if err := db.Table("posts").Create(&post).Error; err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}
+
+func UpdatePost(postId string, post Post) (*Post, error) {
+	if err := db.Table("posts").Where("post_id = ?", postId).Updates(&post).Error; err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}
+
+func DeleteOrder(id string) error {
+	if err := db.Table("posts").Where("post_id = ?", id).Delete(&Post{}).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

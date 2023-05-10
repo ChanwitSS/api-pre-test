@@ -18,6 +18,16 @@ func GetPost(postId string) (*models.Post, error) {
 	return post, nil
 }
 
+func ArchivePost(postId string) (*models.Post, error) {
+	post, err := models.UpdatePost(postId, models.Post{
+		IsArchive: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
+}
+
 // func CreatePost(createPost models.Post) (*models.Post, error) {
 // 	post, err := models.CreatePost(createPost)
 // 	if err != nil {
