@@ -18,17 +18,28 @@ func GetPosts(c *gin.Context) {
 	)
 
 	if err := c.ShouldBindQuery(&queryPost); err != nil {
-		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
+		appG.Response(http.StatusBadRequest, app.Response{
+			Code: http.StatusBadRequest,
+			Msg:  err.Error(),
+			Data: strings.Split(err.Error(), "\n"),
+		})
 		return
 	}
 
-	orders, err := services.GetPosts(queryPost)
+	posts, err := services.GetPosts(queryPost)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, err)
+		appG.C.JSON(http.StatusInternalServerError, app.Response{
+			Code: http.StatusInternalServerError,
+			Msg:  err.Error(),
+			Data: err,
+		})
 		return
 	}
 
-	appG.C.JSON(http.StatusOK, orders)
+	appG.C.JSON(http.StatusOK, app.Response{
+		Code: http.StatusOK,
+		Data: posts,
+	})
 }
 
 func GetPost(c *gin.Context) {
@@ -37,12 +48,45 @@ func GetPost(c *gin.Context) {
 		postId = appG.C.Param("postId")
 	)
 
-	order, err := services.GetPost(postId)
+	post, err := services.GetPost(postId)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, err)
+		appG.C.JSON(http.StatusInternalServerError, app.Response{
+			Code: http.StatusInternalServerError,
+			Msg:  err.Error(),
+			Data: err,
+		})
 		return
 	}
-	appG.C.JSON(http.StatusOK, order)
+	appG.C.JSON(http.StatusOK, app.Response{
+		Code: http.StatusOK,
+		Data: post,
+	})
+}
+
+func CreatePost(c *gin.Context) {
+	var (
+		appG       = app.Gin{C: c}
+		createPost = models.Post{}
+	)
+
+	if err := appG.C.ShouldBindJSON(&createPost); err != nil {
+		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
+		return
+	}
+
+	post, err := services.CreatePost(createPost)
+	if err != nil {
+		appG.C.JSON(http.StatusInternalServerError, app.Response{
+			Code: http.StatusInternalServerError,
+			Msg:  err.Error(),
+			Data: err,
+		})
+		return
+	}
+	appG.C.JSON(http.StatusOK, app.Response{
+		Code: http.StatusOK,
+		Data: post,
+	})
 }
 
 func ArchivePost(c *gin.Context) {
@@ -53,8 +97,15 @@ func ArchivePost(c *gin.Context) {
 
 	post, err := services.ArchivePost(postId)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, err)
+		appG.C.JSON(http.StatusInternalServerError, app.Response{
+			Code: http.StatusInternalServerError,
+			Msg:  err.Error(),
+			Data: err,
+		})
 		return
 	}
-	appG.C.JSON(http.StatusOK, post)
+	appG.C.JSON(http.StatusOK, app.Response{
+		Code: http.StatusOK,
+		Data: post,
+	})
 }

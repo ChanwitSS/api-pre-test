@@ -2,17 +2,19 @@ package models
 
 import (
 	"post/pkg/app"
+	"time"
 )
 
 type Post struct {
 	PostId      int    `gorm:"primary_key" json:"post_id"`
+	Title       string `json:"title"`
 	Status      string `json:"status"` // ["To Do", "In Profress", "Done"]
 	Description string `json:"description"`
 	// CreateUser
 
-	CreatedAt int  `json:"created_at"`
-	UpdatedAt int  `json:"updated_at"`
-	IsArchive bool `json:"is_archive"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	IsArchive bool      `json:"is_archive"`
 }
 
 type QueryPost struct {
@@ -28,7 +30,7 @@ func FindPosts(query QueryPost) (*[]Post, error) {
 
 	err := db.
 		Table("posts").
-		Order("create_date DESC").
+		Order("created_at DESC").
 		Find(&posts).
 		Offset(offset).
 		Limit(limit).
@@ -50,7 +52,7 @@ func FindPost(postId string) (*Post, error) {
 		Table("posts").
 		Where("posts.post_id = ?", postId).
 		// Joins("left join order_products on order_products.order_id = orders.order_id").
-		Preload("Comment").
+		// Preload("Comment").
 		// Preload(clause.Associations).
 		First(&post).
 		Error
@@ -62,7 +64,7 @@ func FindPost(postId string) (*Post, error) {
 	return &post, nil
 }
 
-func InsertOrder(post Post) (*Post, error) {
+func CreatePost(post Post) (*Post, error) {
 	if err := db.Table("posts").Create(&post).Error; err != nil {
 		return nil, err
 	}

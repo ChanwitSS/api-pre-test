@@ -1,6 +1,9 @@
 package services
 
-import "post/internal/models"
+import (
+	"post/internal/models"
+	"post/pkg/app/util"
+)
 
 func GetPosts(query models.QueryPost) (*[]models.Post, error) {
 	posts, err := models.FindPosts(query)
@@ -16,6 +19,21 @@ func GetPost(postId string) (*models.Post, error) {
 		return nil, err
 	}
 	return post, nil
+}
+
+func CreatePost(createPost models.Post) (*models.Post, error) {
+	result, err := models.CreatePost(models.Post{
+		Title:       createPost.Title,
+		Description: createPost.Description,
+		Status:      createPost.Status,
+		CreatedAt:   util.GetLocalTime("Bangkok"),
+		UpdatedAt:   util.GetLocalTime("Bangkok"),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func ArchivePost(postId string) (*models.Post, error) {
