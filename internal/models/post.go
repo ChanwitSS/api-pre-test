@@ -26,6 +26,11 @@ type QueryPost struct {
 	app.Query
 }
 
+type UpdatePostStatus struct {
+	PostId int              `json:"post_id"`
+	Status enums.PostStatus `json:"status"` // ["To Do", "In Profress", "Done"]
+}
+
 func FindPosts(query QueryPost) (*[]Post, error) {
 	var (
 		posts  []Post

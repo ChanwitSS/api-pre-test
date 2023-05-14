@@ -26,7 +26,7 @@ func CreatePost(createPost models.Post) (*models.Post, error) {
 	result, err := models.CreatePost(models.Post{
 		Title:       createPost.Title,
 		Description: createPost.Description,
-		Status:      createPost.Status,
+		Status:      enums.ToDo,
 		UserId:      createPost.UserId,
 		CreatedAt:   util.GetLocalTime("Bangkok"),
 		UpdatedAt:   util.GetLocalTime("Bangkok"),
@@ -48,9 +48,9 @@ func ArchivePost(postId string) (*models.Post, error) {
 	return post, nil
 }
 
-func UpdatePostStatus(postId string, status enums.PostStatus) (*models.Post, error) {
-	post, err := models.UpdatePost(postId, models.Post{
-		Status: status,
+func UpdatePostStatus(updatePostStatus models.UpdatePostStatus) (*models.Post, error) {
+	post, err := models.UpdatePost(util.IntToString(int64(updatePostStatus.PostId)), models.Post{
+		Status: updatePostStatus.Status,
 	})
 	if err != nil {
 		return nil, err

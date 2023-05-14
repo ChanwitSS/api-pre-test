@@ -64,7 +64,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	appG.Response(http.StatusBadRequest, &AuthResponse{
+	appG.Response(http.StatusOK, &AuthResponse{
 		Token: token,
 	})
 }

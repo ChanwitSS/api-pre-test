@@ -78,27 +78,21 @@ func ArchivePost(c *gin.Context) {
 	appG.Response(http.StatusOK, post)
 }
 
-// func UpdatePostStatus(c *gin.Context) {
-// 	var (
-// 		appG             = app.Gin{C: c}
-// 		updatePostStatus = models.Post{}
-// 	)
+func UpdatePostStatus(c *gin.Context) {
+	var (
+		appG             = app.Gin{C: c}
+		updatePostStatus = models.UpdatePostStatus{}
+	)
 
-// 	if err := appG.C.ShouldBindJSON(&updatePostStatus); err != nil {
-// 		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
-// 		return
-// 	}
+	if err := appG.C.ShouldBindJSON(&updatePostStatus); err != nil {
+		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
+		return
+	}
 
-// 	post, err := services.UpdatePostStatus(updatePostStatus.PostId, updatePostStatus.Status)
-// 	if err != nil {
-// 		appG.Response(http.StatusInternalServerError, app.Response{
-// 			Code: http.StatusInternalServerError,
-// 			Data: err,
-// 		})
-// 		return
-// 	}
-// 	appG.Response(http.StatusOK, app.Response{
-// 		Code: http.StatusOK,
-// 		Data: post,
-// 	})
-// }
+	post, err := services.UpdatePostStatus(updatePostStatus)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, err)
+		return
+	}
+	appG.Response(http.StatusOK, post)
+}
