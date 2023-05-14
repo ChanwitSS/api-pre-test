@@ -33,5 +33,5 @@ func Setup() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&Post{}, &User{})
+	db.AutoMigrate(&Post{}, &User{}, &Comment{})
 }

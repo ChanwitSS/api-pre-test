@@ -1,6 +1,7 @@
 package services
 
 import (
+	"post/internal/enums"
 	"post/internal/models"
 	"post/pkg/app/util"
 )
@@ -26,6 +27,7 @@ func CreatePost(createPost models.Post) (*models.Post, error) {
 		Title:       createPost.Title,
 		Description: createPost.Description,
 		Status:      createPost.Status,
+		UserId:      createPost.UserId,
 		CreatedAt:   util.GetLocalTime("Bangkok"),
 		UpdatedAt:   util.GetLocalTime("Bangkok"),
 	})
@@ -46,13 +48,15 @@ func ArchivePost(postId string) (*models.Post, error) {
 	return post, nil
 }
 
-// func CreatePost(createPost models.Post) (*models.Post, error) {
-// 	post, err := models.CreatePost(createPost)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return post, nil
-// }
+func UpdatePostStatus(postId string, status enums.PostStatus) (*models.Post, error) {
+	post, err := models.UpdatePost(postId, models.Post{
+		Status: status,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
+}
 
 // func UpdatePost(postId string, createPost models.Post) (*models.Post, error) {
 // 	post, err := models.UpdatePost(postId, createPost)

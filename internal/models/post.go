@@ -1,16 +1,21 @@
 package models
 
 import (
+	"post/internal/enums"
 	"post/pkg/app"
 	"time"
 )
 
 type Post struct {
-	PostId      int    `gorm:"primary_key" json:"post_id"`
-	Title       string `json:"title"`
-	Status      string `json:"status"` // ["To Do", "In Profress", "Done"]
-	Description string `json:"description"`
-	// CreateUser
+	PostId      int              `gorm:"primary_key" json:"post_id"`
+	Title       string           `json:"title"`
+	Status      enums.PostStatus `json:"status"` // ["To Do", "In Profress", "Done"]
+	Description string           `json:"description"`
+
+	UserId int `json:"user_id,omitempty"`
+
+	Comment []Comment `gorm:"constraint:OnDelete:CASCADE;" json:"comment"`
+	User    *User     `gorm:"references:user_id" json:"user,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -34,9 +39,9 @@ func FindPosts(query QueryPost) (*[]Post, error) {
 		Find(&posts).
 		Offset(offset).
 		Limit(limit).
-		// Preload("Comments").
+		Preload("Comments").
 		// Preload("Comments.User").
-		// Preload("CreateUser").
+		Preload("User").
 		Error
 
 	if err != nil {
@@ -51,8 +56,9 @@ func FindPost(postId string) (*Post, error) {
 	err := db.
 		Table("posts").
 		Where("posts.post_id = ?", postId).
+		Preload("Comment").
+		Preload("User").
 		// Joins("left join order_products on order_products.order_id = orders.order_id").
-		// Preload("Comment").
 		// Preload(clause.Associations).
 		First(&post).
 		Error
