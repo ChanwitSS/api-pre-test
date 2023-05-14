@@ -18,28 +18,17 @@ func GetPosts(c *gin.Context) {
 	)
 
 	if err := c.ShouldBindQuery(&queryPost); err != nil {
-		appG.Response(http.StatusBadRequest, app.Response{
-			Code: http.StatusBadRequest,
-			Msg:  err.Error(),
-			Data: strings.Split(err.Error(), "\n"),
-		})
+		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
 		return
 	}
 
 	posts, err := services.GetPosts(queryPost)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, app.Response{
-			Code: http.StatusInternalServerError,
-			Msg:  err.Error(),
-			Data: err,
-		})
+		appG.Response(http.StatusInternalServerError, err)
 		return
 	}
 
-	appG.C.JSON(http.StatusOK, app.Response{
-		Code: http.StatusOK,
-		Data: posts,
-	})
+	appG.Response(http.StatusOK, posts)
 }
 
 func GetPost(c *gin.Context) {
@@ -50,17 +39,10 @@ func GetPost(c *gin.Context) {
 
 	post, err := services.GetPost(postId)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, app.Response{
-			Code: http.StatusInternalServerError,
-			Msg:  err.Error(),
-			Data: err,
-		})
+		appG.Response(http.StatusInternalServerError, err)
 		return
 	}
-	appG.C.JSON(http.StatusOK, app.Response{
-		Code: http.StatusOK,
-		Data: post,
-	})
+	appG.Response(http.StatusOK, post)
 }
 
 func CreatePost(c *gin.Context) {
@@ -76,17 +58,10 @@ func CreatePost(c *gin.Context) {
 
 	post, err := services.CreatePost(createPost)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, app.Response{
-			Code: http.StatusInternalServerError,
-			Msg:  err.Error(),
-			Data: err,
-		})
+		appG.Response(http.StatusInternalServerError, err)
 		return
 	}
-	appG.C.JSON(http.StatusOK, app.Response{
-		Code: http.StatusOK,
-		Data: post,
-	})
+	appG.Response(http.StatusOK, post)
 }
 
 func ArchivePost(c *gin.Context) {
@@ -97,17 +72,10 @@ func ArchivePost(c *gin.Context) {
 
 	post, err := services.ArchivePost(postId)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, app.Response{
-			Code: http.StatusInternalServerError,
-			Msg:  err.Error(),
-			Data: err,
-		})
+		appG.Response(http.StatusInternalServerError, err)
 		return
 	}
-	appG.C.JSON(http.StatusOK, app.Response{
-		Code: http.StatusOK,
-		Data: post,
-	})
+	appG.Response(http.StatusOK, post)
 }
 
 // func UpdatePostStatus(c *gin.Context) {
@@ -123,14 +91,13 @@ func ArchivePost(c *gin.Context) {
 
 // 	post, err := services.UpdatePostStatus(updatePostStatus.PostId, updatePostStatus.Status)
 // 	if err != nil {
-// 		appG.C.JSON(http.StatusInternalServerError, app.Response{
+// 		appG.Response(http.StatusInternalServerError, app.Response{
 // 			Code: http.StatusInternalServerError,
-// 			Msg:  err.Error(),
 // 			Data: err,
 // 		})
 // 		return
 // 	}
-// 	appG.C.JSON(http.StatusOK, app.Response{
+// 	appG.Response(http.StatusOK, app.Response{
 // 		Code: http.StatusOK,
 // 		Data: post,
 // 	})

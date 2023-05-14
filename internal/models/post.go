@@ -14,8 +14,8 @@ type Post struct {
 
 	UserId int `json:"user_id,omitempty"`
 
-	Comment []Comment `gorm:"constraint:OnDelete:CASCADE;" json:"comment"`
-	User    *User     `gorm:"references:user_id" json:"user,omitempty"`
+	Comments []Comment `gorm:"constraint:OnDelete:CASCADE;" json:"comment"`
+	User     *User     `gorm:"references:user_id" json:"user,omitempty"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -36,11 +36,12 @@ func FindPosts(query QueryPost) (*[]Post, error) {
 	err := db.
 		Table("posts").
 		Order("created_at DESC").
+		Where(&Post{}, "IsArchive").
 		Find(&posts).
 		Offset(offset).
 		Limit(limit).
 		Preload("Comments").
-		// Preload("Comments.User").
+		Preload("Comments.User").
 		Preload("User").
 		Error
 
@@ -56,10 +57,9 @@ func FindPost(postId string) (*Post, error) {
 	err := db.
 		Table("posts").
 		Where("posts.post_id = ?", postId).
-		Preload("Comment").
+		Preload("Comments").
+		Preload("Comments.User").
 		Preload("User").
-		// Joins("left join order_products on order_products.order_id = orders.order_id").
-		// Preload(clause.Associations).
 		First(&post).
 		Error
 

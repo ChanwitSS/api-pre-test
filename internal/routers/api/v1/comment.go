@@ -23,15 +23,11 @@ func CreateComment(c *gin.Context) {
 
 	comment, err := services.CreateComment(createComment)
 	if err != nil {
-		appG.C.JSON(http.StatusInternalServerError, app.Response{
+		appG.Response(http.StatusInternalServerError, app.Response{
 			Code: http.StatusInternalServerError,
-			Msg:  err.Error(),
 			Data: err,
 		})
 		return
 	}
-	appG.C.JSON(http.StatusOK, app.Response{
-		Code: http.StatusOK,
-		Data: comment,
-	})
+	appG.Response(http.StatusOK, comment)
 }

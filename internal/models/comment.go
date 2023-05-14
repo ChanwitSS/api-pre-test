@@ -9,6 +9,8 @@ type Comment struct {
 
 	Text string `json:"text"`
 
+	User *User `gorm:"references:user_id" json:"user,omitempty"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -1,28 +1,74 @@
 package api
 
-// import (
-// 	"net/http"
+import (
+	"net/http"
+	"post/internal/middleware/jwt"
+	"post/internal/models"
+	"post/internal/services"
+	"post/pkg/app"
+	"strings"
 
-// 	// "github.com/astaxie/beego/validation"
-// 	"github.com/gin-gonic/gin"
-// 	// "github.com/EDDYCJY/go-gin-example/pkg/app"
-// 	// "github.com/EDDYCJY/go-gin-example/pkg/e"
-// 	// "github.com/EDDYCJY/go-gin-example/pkg/util"
-// 	// "github.com/EDDYCJY/go-gin-example/service/auth_service"
-// )
+	"github.com/gin-gonic/gin"
+)
 
-// type auth struct {
-// 	Username string `valid:"Required; MaxSize(50)"`
-// 	Password string `valid:"Required; MaxSize(50)"`
-// }
+type Auth struct {
+	Username string `valid:"Required; MaxSize(50)" json:"username"`
+	Password string `valid:"Required; MaxSize(50)" json:"password"`
+	Email    string `valid:"Required; MaxSize(50)" json:"email"`
+}
 
-// // @Summary Get Auth
-// // @Produce  json
-// // @Param username query string true "userName"
-// // @Param password query string true "password"
-// // @Success 200 {object} app.Response
-// // @Failure 500 {object} app.Response
-// // @Router /auth [get]
+type AuthResponse struct {
+	Token *string
+}
+
+func Register(c *gin.Context) {
+	var (
+		appG       = app.Gin{C: c}
+		createUser = models.User{}
+	)
+
+	if err := c.ShouldBindJSON(&createUser); err != nil {
+		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
+		return
+	}
+
+	user, err := services.Register(createUser)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, err)
+		return
+	}
+
+	appG.C.JSON(http.StatusOK, user)
+}
+
+func Login(c *gin.Context) {
+	var (
+		appG = app.Gin{C: c}
+		auth = Auth{}
+	)
+
+	if err := c.ShouldBindJSON(&auth); err != nil {
+		appG.Response(http.StatusBadRequest, strings.Split(err.Error(), "\n"))
+		return
+	}
+
+	_, err := services.Login(auth.Username, auth.Password, auth.Email)
+	if err != nil {
+		appG.Response(http.StatusBadRequest, err)
+		return
+	}
+
+	token, err := jwt.GenerateToken()
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, err)
+		return
+	}
+
+	appG.Response(http.StatusBadRequest, &AuthResponse{
+		Token: token,
+	})
+}
+
 // func GetAuth(c *gin.Context) {
 // 	appG := app.Gin{C: c}
 // 	valid := validation.Validation{}

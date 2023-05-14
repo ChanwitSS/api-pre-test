@@ -6,6 +6,7 @@ import (
 	"os"
 	"post/pkg/app"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -40,4 +41,16 @@ func ValidateToken(token string) error {
 		return nil
 	}
 	return err
+}
+
+func GenerateToken() (*string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(60 * time.Minute).Unix(),
+	})
+
+	ss, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		return nil, err
+	}
+	return &ss, nil
 }
